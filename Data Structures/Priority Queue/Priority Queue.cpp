@@ -2,9 +2,11 @@
 #include <vector>
 #include <array>
 #include <unordered_map>
+#include <set>
 using namespace std;
 using std::vector;
 using std::array;
+using std::set;
 template <typename T>
 class PriorityQueue {
 private:
@@ -135,6 +137,58 @@ public:
         sink(index);
         if (heap[index] == elem) swim(index); // If sinking the element didn't change its position at all, just try swimming it
         return removed;
+    }
+    // recursively checks if heap is a min heap, used for testing purposes to ensure heap property is still being maintained, this method gets called with k=0 to start check at the root.
+    bool isMinHeap(int k) {
+        if k >= size return true; // if outside bounds of heap, return true
+        int leftChild = (2 * k) + 1;
+        int rightChild = (2 * k) + 2;
+
+        // Make sure that current node k's  value is less than both of its children (left and right children) but only if they exist, otherwise return false cuz then its not a valid heap
+        if (leftChild < size && !less(k, leftChild)) return false;
+        if (rightChild < size && !less(k, rightChild)) return false;
+        // recursively checking that both children are also valid heaps of their own.
+        return isMinHeap(leftChild) && isMinHeap(rightChild);
+    }
+    void mapAdd(T val, int index) {
+        bool err = false;
+        set<int> setData;
+        try {
+            set<int> setData = map[val];
+        }
+        catch (const std::exception& e){
+            set<int> setData = new set<int>();
+            setData.insert(index);
+            map.insert(val, setData);
+            err = true;
+        }
+        if (!err){
+            setData.insert(index);
+        }
+    }
+    void mapRemove(T val, int index) {
+        set<int> setData = map[val];
+        setData.erase(index);
+        if (setData.size() == 0) map.erase(val);
+    }
+    int mapGet(T val) {
+        set<T> setData;
+        try {
+            set<T> setData = map[val];
+            return *setData.rbegin(); // Return last element as long as theres a set that exists for this value of val
+        }
+        catch (const std::exception& e) {
+            return -1; // otherwise it doesnt exist in the map, so return null
+        }
+    }
+    // Exchange the index of the 2 nodes internally within the map
+    void mapSwap(T val1, T val2, int val1Index, int val2Index) {
+        set<int> set1 = map[val1];
+        set<int> set2 = map[val2];
+        set1.erase(val1Index);
+        set2.erase(val2Index);
+        set1.insert(val2Index);
+        set2.insert(val1Index);
     }
 };
 int main()
