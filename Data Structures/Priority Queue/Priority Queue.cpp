@@ -54,6 +54,88 @@ public:
     int getSize() {
         return size;
     }
+    T peek() { // Get value/node/element with lowest priority in pq, if empty null returned
+        if isEmpty() return -1;
+        return heap[0]
+    }
+    T poll() { // Removes root of heap
+        return removeAt(0);
+    }
+    bool contains(T elem) {
+        return map.find(elem) == map.end();
+    }
+    void add(T elem) {
+        if (size < capacity) {
+            heap[size] = elem;
+        }
+        else {
+            heap.add(elem);
+            capacity++;
+        }
+        map.insert(elem, size); // Update map accordingly
+        swim(size); // Making recently added element swim/swap its way to its correct position.
+        size++;
+    }
+    bool less(int i, int j) { // if node at i is less than node at j
+        return heap[i] < heap[j]
+    }
+    void swim(int k) { // swimming/swapping a node from bottom to top
+        //index of node that is parent of k
+        int parent = (k - 1) / 2;
+        
+        // keep swimming while we have not reached the root and we're less than our parent
+        while (k > 0 && less(k, parent)) {
+            swap(parent, k); // exchanging k with parent
+            k = parent;
+            parent = (k - 1) / 2; // index of parent of current node
+        }
+    }
+    void sink(int k) { // top to bottom, node is being sinked/swapping into correct position
+        while (true) {
+            int left = 2 * k + 1; // left child of node at k
+            int right = 2 * k + 2; // right child of node at k
+            int smallest = left; // can assume smallest node is the left of the 2 children
+
+            //finding which one is smaller, if right is smaller then obv set smallest = right
+            if (right < size && less(right, left)) {
+                smallest = right;
+            }
+            //stop if we're outside the bounds of the tree, or if we cant sink k anymore
+            if (left >= size || less(k, smallest)) { break; }
+            // move down the tree following the smallest node
+            swap(smallest, k);
+            k = smallest;
+        }
+    }
+    // swaps 2 nodes
+    void swap(int i, int j) {
+        T i_elem = heap[i];
+        T j_elem = heap[j];
+        heap[i] = j_elem;
+        heap[j] = i_elem;
+        mapSwap(i_elem, j_elem, i, j);
+    }
+    bool remove(T element) {
+        // Logarthmic removal with a map
+        int index = mapGet(element);
+        if (index != -1) {
+            removeAt(index);
+        }
+        return index != -1;
+    }
+    T removeAt(int index) {
+        if isEmpty() return -1;
+        size--;
+        T removed = heap[index];
+        swap(i, size); // Remember to remove in heaps, number being removed is swapped with right-most element of bottom row, then it is removed, so swap with last element
+        heap[size] = -1; // Remove the value
+        mapRemove(removed, size);
+        if (index == size) return removed; // If last element was removed, then we no need to sink or swim or anything, just straight up return what was just removed.
+        T elem = heap[index];
+        sink(index);
+        if (heap[index] == elem) swim(index); // If sinking the element didn't change its position at all, just try swimming it
+        return removed;
+    }
 };
 int main()
 {
