@@ -12,17 +12,17 @@ class PriorityQueue {
 private:
     int size = 0; // Current size of pq/heap
     int capacity = 0; // Max size of pq/heap
-    vector<T> heap; // Actual PQ/heap data itself
+    vector<T>* heap; // Actual PQ/heap data itself
     unordered_map<T, vector<int>> map; // Hashmap that maps node values to possible indexes/positions that node value could be stored at within our heap
 public:
     PriorityQueue() { // Constuctor, initially empty
     }
     PriorityQueue(int size) { // Constructor, makes pq with an initial capacity
-        heap = new vector<T>(size);
+        this->heap = new vector<T>(size);
         this->size = size;
     }
     // Below constructor is called "Heapify" process, O(n) creation time.
-    PriorityQueue(T[] elements) { // Constructing pq with the actual data/elements themselves straight away
+    /*PriorityQueue(vector<T> elements) { // Constructing pq with the actual data/elements themselves straight away
         this->size = this->capacity = elements.size();
         heap = new vector<T>(this->size);
         for (int i = 0; i < this->size; i++) {
@@ -31,13 +31,13 @@ public:
         }
         int m = 0;
         int temp = (this->size / 2) - 1;
-        if temp > m{ m = temp; }
+        if (temp > m) { m = temp; }
         for (int i = m; i >= 0; i--) {
             sink(i); // Sinking/bubbling/swapping each element from middle of the heap to first element of heap
         }
-    }
+    }*/
     // Otherwise, this is the other implementation, O(nlog(n)) creation time, more obvious priority queue construction method/overload that you'd probably implement.
-    PriorityQueue(T[] elements) {
+    PriorityQueue(vector<T> elements) {
         PriorityQueue(elements.size());
         for (T elem : elements) {
             add(elem); // add implemented below
@@ -57,8 +57,8 @@ public:
         return size;
     }
     T peek() { // Get value/node/element with lowest priority in pq, if empty null returned
-        if isEmpty() return -1;
-        return heap[0]
+        if (isEmpty()) return -1;
+        return heap[0];
     }
     T poll() { // Removes root of heap
         return removeAt(0);
@@ -71,7 +71,7 @@ public:
             heap[size] = elem;
         }
         else {
-            heap.add(elem);
+            heap.insert(elem);
             capacity++;
         }
         map.insert(elem, size); // Update map accordingly
@@ -79,7 +79,7 @@ public:
         size++;
     }
     bool less(int i, int j) { // if node at i is less than node at j
-        return heap[i] < heap[j]
+        return heap[i] < heap[j];
     }
     void swim(int k) { // swimming/swapping a node from bottom to top
         //index of node that is parent of k
@@ -126,10 +126,10 @@ public:
         return index != -1;
     }
     T removeAt(int index) {
-        if isEmpty() return -1;
+        if (isEmpty()) return -1;
         size--;
         T removed = heap[index];
-        swap(i, size); // Remember to remove in heaps, number being removed is swapped with right-most element of bottom row, then it is removed, so swap with last element
+        swap(index, size); // Remember to remove in heaps, number being removed is swapped with right-most element of bottom row, then it is removed, so swap with last element
         heap[size] = -1; // Remove the value
         mapRemove(removed, size);
         if (index == size) return removed; // If last element was removed, then we no need to sink or swim or anything, just straight up return what was just removed.
@@ -140,7 +140,7 @@ public:
     }
     // recursively checks if heap is a min heap, used for testing purposes to ensure heap property is still being maintained, this method gets called with k=0 to start check at the root.
     bool isMinHeap(int k) {
-        if k >= size return true; // if outside bounds of heap, return true
+        if (k >= size) return true; // if outside bounds of heap, return true
         int leftChild = (2 * k) + 1;
         int rightChild = (2 * k) + 2;
 
@@ -193,6 +193,7 @@ public:
 };
 int main()
 {
-    cout << "NA NA NA NA NA HEY HEY HEY HEY, GOOD BYE!\n";
+    PriorityQueue pq = PriorityQueue<int>({1,2,3,5,6,7,9});
+    cout << pq.getSize();
 }
 
