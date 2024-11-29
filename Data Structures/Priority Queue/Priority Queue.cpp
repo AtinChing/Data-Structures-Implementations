@@ -38,9 +38,7 @@ public:
     }*/
     // Otherwise, this is the other implementation, O(nlog(n)) creation time, more obvious priority queue construction method/overload that you'd probably implement.
     PriorityQueue(initializer_list<T> elements) {
-        cout << "size"<< this->size << endl;
         this->capacity = elements.size();   // Set the capacity to match the size
-        cout << "got here fine" << endl;
         heap.reserve(capacity);
         for (const T& elem : elements) {
             add(elem);  // Add each element to the heap
@@ -77,14 +75,10 @@ public:
             heap.push_back(elem);
             capacity++;
         }
-        cout << "lalala" << endl;
         mapAdd(elem, size); // Update map accordingly
-        cout << "lalala" << endl;
         swim(size); // Making recently added element swim/swap its way to its correct position.
-        cout << "swim?" << endl;
         
         size++;
-        cout << "added element" << elem << endl;
     }
     bool less(int i, int j) {
         return heap[i] <= heap[j];
@@ -99,7 +93,6 @@ public:
     void swim(int k) { // swimming/swapping a node from bottom to top
         //index of node that is parent of k
         int parent = (k - 1) / 2;
-        cout << "parent is " << parent << " and k is " << k << endl;
         // keep swimming while we have not reached the root and we're less than our parent
         while (k > 0 && less(k, parent)) {
             swap(parent, k); // exchanging k with parent
@@ -126,15 +119,17 @@ public:
     }
     // swaps 2 nodes
     void swap(int i, int j) {
-        T i_elem = heap.at(i);
-        T j_elem = heap.at(j);
-        heap.at(i) = j_elem;
-        heap.at(j) = i_elem;
-        mapSwap(i_elem, j_elem, i, j);
+        T i_elem = heap[i];
+        T j_elem = heap[j];
+        heap[i] = j_elem;
+        heap[j] = i_elem;
+        mapSwap(heap[i], heap[j], i, j);
     }
+
     bool remove(T element) {
         // Logarthmic removal with a map
         int index = mapGet(element);
+        //printf("  INDEX IS %d  ", index);
         if (index != -1) {
             removeAt(index);
         }
@@ -145,7 +140,7 @@ public:
         size--;
         T removed = heap[index];
         swap(index, size); // Remember to remove in heaps, number being removed is swapped with right-most element of bottom row, then it is removed, so swap with last element
-        heap[size] = -1; // Remove the value
+        heap[size] = T(); // Remove the value
         mapRemove(removed, size);
         if (index == size) return removed; // If last element was removed, then we no need to sink or swim or anything, just straight up return what was just removed.
         T elem = heap[index];
@@ -198,6 +193,7 @@ int main()
         
         cout << "Initial Heap: ";
         pq.printHeap();
+        cout << endl;
         
         cout << "Size: " << pq.getSize() << endl;
         
@@ -205,18 +201,21 @@ int main()
         
         cout << "Peek (top element): " << pq.peek() << endl;
         pq.printHeap();
+        cout << endl;
         cout << "Polling (removing top element): " << pq.poll() << endl;
         
         cout << "Heap after poll: ";
         pq.printHeap();
-        
+        cout << endl;
         pq.add(0);
         cout << "Heap after adding 0: ";
         pq.printHeap();
+        cout << endl;
         
         pq.remove(5);
         cout << "Heap after removing 5: ";
         pq.printHeap();
+        cout << endl;
         
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
