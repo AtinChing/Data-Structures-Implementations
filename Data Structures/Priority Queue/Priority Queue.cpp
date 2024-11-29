@@ -12,14 +12,14 @@ class PriorityQueue {
 private:
     int size = 0; // Current size of pq/heap
     int capacity = 0; // Max size of pq/heap
-    vector<T>* heap; // Actual PQ/heap data itself
-    unordered_map<T, vector<int>> map; // Hashmap that maps node values to possible indexes/positions that node value could be stored at within our heap
+    vector<T> heap; // Actual PQ/heap data itself
+    unordered_map<T, set<int>> map; // Hashmap that maps node values to possible indexes/positions that node value could be stored at within our heap
 public:
     PriorityQueue() { // Constuctor, initially empty
     }
     PriorityQueue(int size) { // Constructor, makes pq with an initial capacity
-        this->heap = new vector<T>(size);
-        this->size = size;
+        this->size = 0;
+        this->capacity = size;
     }
     // Below constructor is called "Heapify" process, O(n) creation time.
     /*PriorityQueue(vector<T> elements) { // Constructing pq with the actual data/elements themselves straight away
@@ -37,10 +37,13 @@ public:
         }
     }*/
     // Otherwise, this is the other implementation, O(nlog(n)) creation time, more obvious priority queue construction method/overload that you'd probably implement.
-    PriorityQueue(vector<T> elements) {
-        PriorityQueue(elements.size());
-        for (T elem : elements) {
-            add(elem); // add implemented below
+    PriorityQueue(initializer_list<T> elements) {
+        cout << "size"<< this->size << endl;
+        this->capacity = elements.size();   // Set the capacity to match the size
+        cout << "got here fine" << endl;
+        heap.reserve(capacity);
+        for (const T& elem : elements) {
+            add(elem);  // Add each element to the heap
         }
     }
     bool isEmpty() {
@@ -64,27 +67,39 @@ public:
         return removeAt(0);
     }
     bool contains(T elem) {
-        return map.find(elem) == map.end();
+        return map.find(elem) != map.end();
     }
     void add(T elem) {
         if (size < capacity) {
-            heap[size] = elem;
+            heap[size] = elem;  // Dereference and access the element
         }
         else {
-            heap.insert(elem);
+            heap.push_back(elem);
             capacity++;
         }
-        map.insert(elem, size); // Update map accordingly
+        cout << "lalala" << endl;
+        mapAdd(elem, size); // Update map accordingly
+        cout << "lalala" << endl;
         swim(size); // Making recently added element swim/swap its way to its correct position.
+        cout << "swim?" << endl;
+        
         size++;
+        cout << "added element" << elem << endl;
     }
-    bool less(int i, int j) { // if node at i is less than node at j
-        return heap[i] < heap[j];
+    bool less(int i, int j) {
+        return heap[i] <= heap[j];
     }
+
+    void printHeap() {
+    cout << "Heap Contents: ";
+    for (int i = 0; i < size; i++) {
+        cout << heap[i] << " ";  // Dereference pointer to access the vector's elements
+    }
+}
     void swim(int k) { // swimming/swapping a node from bottom to top
         //index of node that is parent of k
         int parent = (k - 1) / 2;
-        
+        cout << "parent is " << parent << " and k is " << k << endl;
         // keep swimming while we have not reached the root and we're less than our parent
         while (k > 0 && less(k, parent)) {
             swap(parent, k); // exchanging k with parent
@@ -111,10 +126,10 @@ public:
     }
     // swaps 2 nodes
     void swap(int i, int j) {
-        T i_elem = heap[i];
-        T j_elem = heap[j];
-        heap[i] = j_elem;
-        heap[j] = i_elem;
+        T i_elem = heap.at(i);
+        T j_elem = heap.at(j);
+        heap.at(i) = j_elem;
+        heap.at(j) = i_elem;
         mapSwap(i_elem, j_elem, i, j);
     }
     bool remove(T element) {
@@ -139,7 +154,7 @@ public:
         return removed;
     }
     // recursively checks if heap is a min heap, used for testing purposes to ensure heap property is still being maintained, this method gets called with k=0 to start check at the root.
-    bool isMinHeap(int k) {
+    bool isMinHeap(int k = 0) {
         if (k >= size) return true; // if outside bounds of heap, return true
         int leftChild = (2 * k) + 1;
         int rightChild = (2 * k) + 2;
@@ -151,39 +166,23 @@ public:
         return isMinHeap(leftChild) && isMinHeap(rightChild);
     }
     void mapAdd(T val, int index) {
-        bool err = false;
-        set<int> setData;
-        try {
-            set<int> setData = map[val];
-        }
-        catch (const std::exception& e){
-            set<int> setData = new set<int>();
-            setData.insert(index);
-            map.insert(val, setData);
-            err = true;
-        }
-        if (!err){
-            setData.insert(index);
-        }
+        map[val].insert(index);
     }
     void mapRemove(T val, int index) {
         set<int> setData = map[val];
         setData.erase(index);
         if (setData.size() == 0) map.erase(val);
     }
-    int mapGet(T val) {
-        set<T> setData;
-        try {
-            set<T> setData = map[val];
-            return *setData.rbegin(); // Return last element as long as theres a set that exists for this value of val
+    int mapGet(T val) const {
+        auto it = map.find(val);
+        if (it != map.end() && !it->second.empty()) {
+            return *it->second.rbegin(); // Return the last (most recent) index
         }
-        catch (const std::exception& e) {
-            return -1; // otherwise it doesnt exist in the map, so return null
-        }
+        return -1;
     }
     // Exchange the index of the 2 nodes internally within the map
     void mapSwap(T val1, T val2, int val1Index, int val2Index) {
-        set<int> set1 = map[val1];
+        set<int> set1 = map[val1]; // try auto?
         set<int> set2 = map[val2];
         set1.erase(val1Index);
         set2.erase(val2Index);
@@ -193,7 +192,34 @@ public:
 };
 int main()
 {
-    PriorityQueue pq = PriorityQueue<int>({1,2,3,5,6,7,9});
-    cout << pq.getSize();
+    try {
+        // Demonstration of various PriorityQueue operations
+        PriorityQueue<int> pq({1, 2, 3, 5, 6, 7, 9});
+        
+        cout << "Initial Heap: ";
+        pq.printHeap();
+        
+        cout << "Size: " << pq.getSize() << endl;
+        
+        cout << "Is Min Heap? " << (pq.isMinHeap() ? "Yes" : "No") << endl;
+        
+        cout << "Peek (top element): " << pq.peek() << endl;
+        pq.printHeap();
+        cout << "Polling (removing top element): " << pq.poll() << endl;
+        
+        cout << "Heap after poll: ";
+        pq.printHeap();
+        
+        pq.add(0);
+        cout << "Heap after adding 0: ";
+        pq.printHeap();
+        
+        pq.remove(5);
+        cout << "Heap after removing 5: ";
+        pq.printHeap();
+        
+    } catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
+    }
+    return 0;
 }
-
