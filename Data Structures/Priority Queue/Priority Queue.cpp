@@ -7,6 +7,7 @@ using namespace std;
 using std::vector;
 using std::array;
 using std::set;
+using std::unordered_map;
 template <typename T>
 class PriorityQueue {
 private:
@@ -75,14 +76,13 @@ public:
             heap.push_back(elem);
             capacity++;
         }
-        cout << heap[size];
         mapAdd(elem, size); // Update map accordingly
         swim(size); // Making recently added element swim/swap its way to its correct position.
         
         size++;
     }
     bool less(int i, int j) {
-        return heap[i] <= heap[j];
+        return heap[i] < heap[j];
     }
 
     void printHeap() {
@@ -106,7 +106,6 @@ public:
             int left = 2 * k + 1; // left child of node at k
             int right = 2 * k + 2; // right child of node at k
             int smallest = left; // can assume smallest node is the left of the 2 children
-
             //finding which one is smaller, if right is smaller then obv set smallest = right
             if (right < size && less(right, left)) {
                 smallest = right;
@@ -124,13 +123,21 @@ public:
         T j_elem = heap[j];
         heap[i] = j_elem;
         heap[j] = i_elem;
-        mapSwap(heap[i], heap[j], i, j);
+        mapSwap(i_elem, j_elem, i, j);
+        
     }
-
+    // Exchange the index of the 2 nodes internally within the map
+    void mapSwap(T val1, T val2, int val1Index, int val2Index) {
+        auto& set1 = map[val1];
+        auto& set2 = map[val2];
+        set1.erase(val1Index);
+        set2.erase(val2Index);
+        set1.insert(val2Index);
+        set2.insert(val1Index);
+    }
     bool remove(T element) {
         // Logarthmic removal with a map
         int index = mapGet(element);
-        printf("  INDEX IS %d  ", index);
         if (index != -1) {
             removeAt(index);
         }
@@ -165,27 +172,21 @@ public:
         map[val].insert(index);
     }
     void mapRemove(T val, int index) {
-        set<int> setData = map[val];
-        setData.erase(index);
-        if (setData.size() == 0) map.erase(val);
+        auto it = map.find(val);
+        if (it != map.end()) {
+            it->second.erase(index); // Directly modify the set in the map
+            if (it->second.empty()) 
+                map.erase(it);       // Remove the entry if the set is empty
+        }
     }
     int mapGet(T val) const {
-        iterator it = map.find(val);
-        iterator it2 = it->first;
+        auto it = map.find(val);
         if (it != map.end() && !it->second.empty()) {
             return *it->second.rbegin(); // Return the last (most recent) index
         }
         return -1;
     }
-    // Exchange the index of the 2 nodes internally within the map
-    void mapSwap(T val1, T val2, int val1Index, int val2Index) {
-        set<int> set1 = map[val1]; // try auto?
-        set<int> set2 = map[val2];
-        set1.erase(val1Index);
-        set2.erase(val2Index);
-        set1.insert(val2Index);
-        set2.insert(val1Index);
-    }
+    
 };
 int main()
 {
@@ -218,7 +219,16 @@ int main()
         cout << "Heap after removing 5: ";
         pq.printHeap();
         cout << endl;
-        
+
+        pq.add(5);
+        cout << "Heap after adding 5: ";
+        pq.printHeap();
+        cout << endl;
+
+        pq.remove(5);
+        cout << "Heap after removing 5: ";
+        pq.printHeap();
+        cout << endl;
     } catch (const exception& e) {
         cerr << "Error: " << e.what() << endl;
     }
