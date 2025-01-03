@@ -75,6 +75,7 @@ public:
             heap.push_back(elem);
             capacity++;
         }
+        cout << heap[size];
         mapAdd(elem, size); // Update map accordingly
         swim(size); // Making recently added element swim/swap its way to its correct position.
         
@@ -129,7 +130,7 @@ public:
     bool remove(T element) {
         // Logarthmic removal with a map
         int index = mapGet(element);
-        //printf("  INDEX IS %d  ", index);
+        printf("  INDEX IS %d  ", index);
         if (index != -1) {
             removeAt(index);
         }
@@ -169,7 +170,8 @@ public:
         if (setData.size() == 0) map.erase(val);
     }
     int mapGet(T val) const {
-        auto it = map.find(val);
+        iterator it = map.find(val);
+        iterator it2 = it->first;
         if (it != map.end() && !it->second.empty()) {
             return *it->second.rbegin(); // Return the last (most recent) index
         }
