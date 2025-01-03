@@ -10,7 +10,8 @@ List of data structures contained in this repository (so far):
 - Linked List ✅
 - Stacks ✅
 - Queues ✅
-- Priority Queues ➖
+- Priority Queue (Lazy removal) ➖
+- Priority Queue (Quick removal) ✅
 - Binary Search Tree (node) ✅
 - Graph (node) ✅
 - Indexed Priority Queues ❌
