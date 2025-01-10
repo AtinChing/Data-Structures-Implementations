@@ -17,5 +17,5 @@ Data structure implementation status will be shown by ✅❌➖ (Complete, Incom
 - Fenwich Tree ❌
 - Hash set ❌
 - Hash table ❌
-- Union Find (with Path Compression) ❌
+- Union Find (with Path Compression) ➖
 - AVL Tree ❌
