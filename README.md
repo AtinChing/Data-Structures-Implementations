@@ -15,6 +15,7 @@ Data structure implementation status will be shown by ✅❌➖ (Complete, Incom
 - Binary Search Tree (node) ❌
 - Graph (node) ✅
 - Indexed Priority Queues ❌
+- Trie (Prefix tree) ❌
 - Fenwich Tree ❌
 - Hash set ❌
 - Hash table ❌
