@@ -26,22 +26,22 @@
                     map[node->val] = node; // node values used to determine their index in internal array
                 }
             }
-            T find(T elem){ // finds root that this element actually points to
+            int find(T elem){ // finds root that this element actually points to
                 int currentIndex = elem.val;
                 while(currentIndex != pointsTo[currentIndex]){ // while node not pointing to itself, so its pointing to another node and root not discovered/reached yet
                     currentIndex = pointsTo[currentIndex];
                 }
                 int rootIndex = currentIndex;
-                currentIndex = map[elem.val];
+                currentIndex = map[elem.val]->val;
                 while(currentIndex != pointsTo[currentIndex]){
                     int next = pointsTo[currentIndex];
                     pointsTo[currentIndex] = rootIndex;
                     currentIndex = next;
                 }
-                return map[rootIndex];
+                return map[rootIndex]->val;
 
             }
-            T unify(T elem1, T elem2){
+            void unify(T elem1, T elem2){
                 int root1 = find(elem1);
                 int root2 = find(elem2);
                 if(root1 == root2){return;} // already unified
@@ -80,4 +80,7 @@
         cout << uf.components() << endl;
         uf.unify(*B, *C);
         cout << uf.components() << endl;
+        uf.unify(*B, *D);
+        cout << uf.components() << endl;
+
     }

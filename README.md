@@ -11,11 +11,12 @@ Data structure implementation status will be shown by ✅❌➖ (Complete, Incom
 - Queues ✅
 - Priority Queue (Lazy removal) ➖
 - Priority Queue (Quick removal) ✅
-- Binary Search Tree (node) ✅
+- Binary Tree (node) ✅
+- Binary Search Tree (node) ❌
 - Graph (node) ✅
 - Indexed Priority Queues ❌
 - Fenwich Tree ❌
 - Hash set ❌
 - Hash table ❌
-- Union Find (with Path Compression) ➖
+- Union Find (with Path Compression) ✅
 - AVL Tree ❌
