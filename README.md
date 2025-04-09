@@ -21,3 +21,4 @@ Data structure implementation status will be shown by ✅❌➖ (Complete, Incom
 - Hash table ❌
 - Union Find (with Path Compression) ✅
 - AVL Tree ❌
+- Red Black Tree ❌
