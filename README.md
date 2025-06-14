@@ -11,6 +11,7 @@ Data structure implementation status will be shown by ✅❌➖ (Complete, Incom
 - Queues ✅
 - Priority Queue (Lazy removal) ➖
 - Priority Queue (Quick removal) ✅
+- Priority Queue (with D-ary heap modification) ❌
 - Binary Tree (node) ✅
 - Binary Search Tree (node) ❌
 - Graph (node) ✅
